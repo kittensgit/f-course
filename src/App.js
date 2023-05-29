@@ -1,22 +1,21 @@
-import React, { useState } from "react";
-import { Counter } from "./Counter";
-import { ClassConter } from "./ClassCounter";
+import React from "react";
+import './styles/App.css'
 
 function App() {
 
-  const [value, setValue] = useState('text')
-
-  const changeHandler = (e) => {
-    setValue(e.currentTarget.value)
-  }
-
-
   return (
     <div className="App">
-      <Counter />
-      <ClassConter />
-      <h1>{value}</h1>
-      <input type='text' onChange={changeHandler} value={value} />
+      <div className="post">
+        <div className='post__content'>
+          <strong>1. JS</strong>
+          <div>
+            JS - it is programming language
+          </div>
+        </div>
+        <div classname='post__btn'>
+          <button>delete</button>
+        </div>
+      </div>
     </div>
   );
 }
