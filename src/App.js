@@ -14,16 +14,18 @@ function App() {
 
   const [title, setTitle] = useState('')
 
-  const addNewPost = () => {
-
+  const addNewPost = (e) => {
+    e.preventDefault()
+    console.log(title)
   }
 
   return (
     <div className="App">
       <form>
+        {/* управляемый компонент */}
         <MyInput value={title} onChange={(e) => setTitle(e.currentTarget.value)} type='text' placeholder="desc post title" />
         <MyInput type='text' placeholder="desc post" />
-        <MyButton onClick={addNewPost} disabled>create post</MyButton>
+        <MyButton onClick={addNewPost} >create post</MyButton>
       </form>
       <PostList posts={posts} title='post list' />
     </div>

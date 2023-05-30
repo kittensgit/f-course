@@ -1,8 +1,6 @@
 import React from 'react'
 
 export const PostItem = (props) => {
-
-    console.log(props)
     return (
         <div className="post">
             <div className='post__content'>
@@ -11,7 +9,7 @@ export const PostItem = (props) => {
                     {props.post.body}
                 </div>
             </div>
-            <div classname='post__btn'>
+            <div className='post__btn'>
                 <button>delete</button>
             </div>
         </div>
