@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import './styles/App.css';
 import { PostList } from "./Components/PostList";
-import { MyButton } from "./Components/UI/button/MyButton";
-import { MyInput } from "./Components/UI/input/MyInput";
+import { PostForm } from "./Components/PostForm";
 
 function App() {
 
@@ -12,32 +11,18 @@ function App() {
     { id: 3, title: 'JS', body: 'JS - it is programming language' }
   ])
 
-  const [post, setPost] = useState({ title: '', body: '' })
+  const createPost = (newPost) => {
+    setPosts([...posts, newPost])
+  }
 
-  const addNewPost = (e) => {
-    e.preventDefault()
-    setPosts([...posts, {
-      ...post, id: Date.now()
-    }])
-    setPost({ title: '', body: '' })
+  const removePost = (post) => {
+    setPosts(posts.filter(p => p.id !== post.id))
   }
 
   return (
     <div className="App">
-      <form>
-        <MyInput
-          value={post.title}
-          onChange={(e) => setPost({ ...post, title: e.currentTarget.value })}
-          type='text'
-          placeholder="desc post title" />
-        <MyInput
-          value={post.body}
-          onChange={(e) => setPost({ ...post, body: e.currentTarget.value })}
-          type='text'
-          placeholder="desc post" />
-        <MyButton onClick={addNewPost} >create post</MyButton>
-      </form>
-      <PostList posts={posts} title='post list' />
+      <PostForm create={createPost} />
+      <PostList remove={removePost} posts={posts} title='post list' />
     </div>
   );
 }
