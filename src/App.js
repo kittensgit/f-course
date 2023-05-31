@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import './styles/App.css';
 import { PostList } from "./Components/PostList";
@@ -7,6 +7,7 @@ import { PostFilter } from "./Components/PostFilter";
 import { MyModal } from "./Components/UI/modal/MyModal";
 import { MyButton } from "./Components/UI/button/MyButton";
 import { usePosts } from "./hooks/usePosts";
+import PostService from "./Components/API/PostService";
 
 function App() {
 
@@ -21,14 +22,18 @@ function App() {
 
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
     setModal(false)
   }
 
   async function fetchPosts() {
-    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-    setPosts(response.data)
+    const posts = await PostService.getAll();
+    setPosts(posts)
   }
 
   const removePost = (post) => { //получаем пост из дочернего эл-та
