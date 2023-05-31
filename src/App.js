@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import './styles/App.css';
 import { PostList } from "./Components/PostList";
 import { PostForm } from "./Components/PostForm";
@@ -25,7 +26,12 @@ function App() {
     setModal(false)
   }
 
-  const removePost = (post) => {
+  async function fetchPosts() {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+    setPosts(response.data)
+  }
+
+  const removePost = (post) => { //получаем пост из дочернего эл-та
     setPosts(posts.filter(p => p.id !== post.id))
   }
 
