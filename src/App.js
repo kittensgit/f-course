@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import './styles/App.css';
 import { PostList } from "./Components/PostList";
 import { PostForm } from "./Components/PostForm";
@@ -19,6 +18,7 @@ function App() {
 
   const [filter, setFilter] = useState({ sort: '', query: '' })
   const [modal, setModal] = useState(false)
+  const [isPostsLoading, setIsPostsLoading] = useState(false)
 
   const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
@@ -32,8 +32,10 @@ function App() {
   }
 
   async function fetchPosts() {
+    setIsPostsLoading(true);
     const posts = await PostService.getAll();
     setPosts(posts)
+    setIsPostsLoading(false)
   }
 
   const removePost = (post) => { //получаем пост из дочернего эл-та
@@ -50,7 +52,10 @@ function App() {
       </MyModal>
       <hr style={{ margin: '15px 0' }} />
       <PostFilter filter={filter} setFilter={setFilter} />
-      <PostList remove={removePost} posts={sortedAndSearchedPosts} title='post list' />
+      {isPostsLoading
+        ? <h1>Loading...</h1>
+        : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='post list' />
+      }
     </div>
   );
 }
