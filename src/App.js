@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import './styles/App.css';
 import { PostList } from "./Components/PostList";
 import { PostForm } from "./Components/PostForm";
-import { MySelect } from "./Components/UI/select/MySelect";
+import { PostFilter } from "./Components/PostFilter";
 
 function App() {
 
@@ -12,7 +12,18 @@ function App() {
     { id: 3, title: 'c', body: 'k' }
   ])
 
-  const [selectedSort, setSelectedSort] = useState('')
+  const [filter, setFilter] = useState({ sort: '', query: '' })
+
+  const sortedPosts = useMemo(() => {
+    if (filter.sort) {
+      return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+    }
+    return posts;
+  }, [filter.sort, posts])
+
+  const sortedAndSearchedPosts = useMemo(() => {
+    return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query.toLowerCase()))
+  }, [filter.query, sortedPosts])
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost])
@@ -22,30 +33,12 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id))
   }
 
-  const sortPosts = (sort) => {
-    setSelectedSort(sort)
-    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
-  }
-
   return (
     <div className="App">
       <PostForm create={createPost} />
       <hr style={{ margin: '15px 0' }} />
-      <div>
-        <MySelect
-          value={selectedSort}
-          onChange={sortPosts}
-          defaultValue='sort'
-          options={[
-            { value: 'title', name: 'by name' },
-            { value: 'body', name: 'by desc' }
-          ]}
-        />
-      </div>
-      {posts.length !== 0
-        ? <PostList remove={removePost} posts={posts} title='post list' />
-        : <h1 style={{ textAlign: 'center' }}>Not found post</h1>
-      }
+      <PostFilter filter={filter} setFilter={setFilter} />
+      <PostList remove={removePost} posts={sortedAndSearchedPosts} title='post list' />
     </div>
   );
 }
