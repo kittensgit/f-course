@@ -7,6 +7,7 @@ import { MyModal } from "./Components/UI/modal/MyModal";
 import { MyButton } from "./Components/UI/button/MyButton";
 import { usePosts } from "./hooks/usePosts";
 import PostService from "./Components/API/PostService";
+import { Loader } from "./Components/UI/loader/Loader";
 
 function App() {
 
@@ -53,7 +54,7 @@ function App() {
       <hr style={{ margin: '15px 0' }} />
       <PostFilter filter={filter} setFilter={setFilter} />
       {isPostsLoading
-        ? <h1>Loading...</h1>
+        ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}><Loader /></div>
         : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='post list' />
       }
     </div>
