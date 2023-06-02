@@ -23,6 +23,9 @@
     align-items: center;
 }
 
+.post__btn {
+    display: flex;
+}
 
 .post-enter {
     transform: translateX(-350px);
