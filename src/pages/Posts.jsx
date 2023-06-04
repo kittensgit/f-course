@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { PostList } from "../Components/PostList";
 import { PostForm } from "../Components/PostForm";
 import { PostFilter } from "../Components/PostFilter";
@@ -10,6 +10,8 @@ import { Loader } from "../Components/UI/loader/Loader";
 import { useFetching } from "../hooks/useFetching";
 import { getPageCount } from "../utils/pages";
 import { Pagination } from "../Components/UI/padination/Pagination";
+import { useObserver } from "../hooks/useObserver";
+import { MySelect } from "../Components/UI/select/MySelect";
 
 function Posts() {
 
@@ -20,18 +22,23 @@ function Posts() {
     const [totalPages, setTotalPages] = useState(0)  //общее кол-во страниц
     const [limit, setLimit] = useState(10) // лимит постов
     const [page, setPage] = useState(1) //номер текущей страницы
+    const lastElement = useRef()
 
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
     const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
         const response = await PostService.getAll(limit, page);
-        setPosts(response.data)
+        setPosts([...posts, ...response.data])
         const totalCount = response.headers['x-total-count'] //общее кол-во постов
         setTotalPages(getPageCount(totalCount, limit))
     })
 
+    useObserver(lastElement, page < totalPages, isPostsLoading, () => {
+        setPage(page + 1)
+    })
+
     useEffect(() => {
         fetchPosts(limit, page)
-    }, [])
+    }, [page, limit])
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost])
@@ -44,7 +51,6 @@ function Posts() {
 
     const changePage = (page) => {
         setPage(page)
-        fetchPosts(limit, page)
     }
 
     return (
@@ -57,12 +63,24 @@ function Posts() {
             </MyModal>
             <hr style={{ margin: '15px 0' }} />
             <PostFilter filter={filter} setFilter={setFilter} />
+            <MySelect
+                value={limit}
+                onChange={value => setLimit(value)}
+                defaultValue='count elements on page'
+                options={[
+                    {value: 5, 'name': '5'},
+                    {value: 10, 'name': '10'},
+                    {value: 25, 'name': '25'},
+                    {value: -1, 'name': 'all'},
+                ]}
+            />
             {postError &&
                 <h1>An error has occurred "{postError}"</h1>
             }
-            {isPostsLoading
-                ? <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}><Loader /></div>
-                : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='post list' />
+            <PostList remove={removePost} posts={sortedAndSearchedPosts} title='post list' />
+            <div ref={lastElement} style={{ height: '20px', background: 'red' }}></div>
+            {isPostsLoading &&
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}><Loader /></div>
             }
             <Pagination totalPages={totalPages} page={page} changePage={changePage} />
         </div>
